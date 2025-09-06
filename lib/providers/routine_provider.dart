@@ -207,6 +207,11 @@ class RoutineProvider with ChangeNotifier {
     }
   }
 
+  // Skip routine
+  Future<bool> skipRoutine(String routineId) async {
+    return await markRoutine(routineId, 'skipped');
+  }
+
   // Legacy methods for backward compatibility
   Future<bool> completeRoutine(String routineId) async {
     return await markRoutine(routineId, 'completed');

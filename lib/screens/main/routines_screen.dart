@@ -124,9 +124,10 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              final routines = routineProvider.routines;
-              final completedRoutines = routines.where((r) => r.state == 'completed').length;
-              final totalRoutines = routines.length;
+              final routines = routineProvider.getFilteredRoutines();
+              final allRoutines = routineProvider.routines;
+              final completedRoutines = allRoutines.where((r) => r.state == 'completed').length;
+              final totalRoutines = allRoutines.length;
 
               return Column(
                 children: [
@@ -193,6 +194,12 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                             routineProvider.currentFilter == RoutineFilter.completed,
                             () => routineProvider.setFilter(RoutineFilter.completed),
                           ),
+                          const SizedBox(width: 8.0),
+                          _buildFilterChip(
+                            'Skipped',
+                            routineProvider.currentFilter == RoutineFilter.skipped,
+                            () => routineProvider.setFilter(RoutineFilter.skipped),
+                          ),
                         ],
                       ),
                     ),
@@ -239,29 +246,36 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                             itemBuilder: (context, index) {
                               final routine = routines[index];
                               final isCompleted = routine.state == 'completed';
+                              final isSkipped = routine.state == 'skipped';
                               return Card(
                                 margin: const EdgeInsets.only(bottom: 8.0),
                                 child: ListTile(
                                   leading: CircleAvatar(
                                     backgroundColor: isCompleted
                                         ? Colors.green
-                                        : Theme.of(context).primaryColor,
+                                        : isSkipped
+                                            ? Colors.orange
+                                            : Theme.of(context).primaryColor,
                                     child: Icon(
                                       isCompleted
                                           ? Icons.check
-                                          : Icons.schedule,
+                                          : isSkipped
+                                              ? Icons.skip_next
+                                              : Icons.schedule,
                                       color: Colors.white,
                                     ),
                                   ),
                                   title: Text(
                                     routine.title,
                                     style: TextStyle(
-                                      decoration: isCompleted
+                                      decoration: isCompleted || isSkipped
                                           ? TextDecoration.lineThrough
                                           : null,
                                       color: isCompleted
                                           ? Colors.grey[600]
-                                          : null,
+                                          : isSkipped
+                                              ? Colors.orange[700]
+                                              : null,
                                     ),
                                   ),
                                   subtitle: routine.description.isNotEmpty
@@ -270,21 +284,68 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                                           style: TextStyle(
                                             color: isCompleted
                                                 ? Colors.grey[500]
-                                                : null,
+                                                : isSkipped
+                                                    ? Colors.orange[600]
+                                                    : null,
                                           ),
                                         )
                                       : null,
-                                  trailing: IconButton(
+                                  trailing: PopupMenuButton<String>(
                                     icon: Icon(
                                       isCompleted
                                           ? Icons.undo
-                                          : Icons.check_circle_outline,
+                                          : Icons.more_vert,
                                     ),
-                                    onPressed: () {
-                                      if (isCompleted) {
-                                        routineProvider.uncompleteRoutine(routine.id);
+                                    onSelected: (value) {
+                                      switch (value) {
+                                        case 'complete':
+                                          routineProvider.completeRoutine(routine.id);
+                                          break;
+                                        case 'skip':
+                                          routineProvider.skipRoutine(routine.id);
+                                          break;
+                                        case 'unmark':
+                                          routineProvider.uncompleteRoutine(routine.id);
+                                          break;
+                                      }
+                                    },
+                                    itemBuilder: (context) {
+                                      if (isCompleted || isSkipped) {
+                                        return [
+                                          const PopupMenuItem(
+                                            value: 'unmark',
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.undo),
+                                                SizedBox(width: 8),
+                                                Text('Mark as Pending'),
+                                              ],
+                                            ),
+                                          ),
+                                        ];
                                       } else {
-                                        routineProvider.completeRoutine(routine.id);
+                                        return [
+                                          const PopupMenuItem(
+                                            value: 'complete',
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.check_circle_outline),
+                                                SizedBox(width: 8),
+                                                Text('Mark as Complete'),
+                                              ],
+                                            ),
+                                          ),
+                                          const PopupMenuItem(
+                                            value: 'skip',
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.skip_next),
+                                                SizedBox(width: 8),
+                                                Text('Skip'),
+                                              ],
+                                            ),
+                                          ),
+                                        ];
                                       }
                                     },
                                   ),
