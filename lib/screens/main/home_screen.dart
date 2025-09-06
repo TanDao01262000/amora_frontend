@@ -6,6 +6,8 @@ import '../../providers/timeline_provider.dart';
 import '../../providers/calendar_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../models/user.dart';
+import '../../widgets/simple_background.dart';
+import '../../theme/app_theme.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onNavigateToProfile;
@@ -104,6 +106,13 @@ class _HomeScreenState extends State<HomeScreen> {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Home'),
+            backgroundColor: themeProvider.isDarkMode 
+                ? AppColors.darkLavender 
+                : AppColors.lovePink,
+            foregroundColor: themeProvider.isDarkMode 
+                ? AppColors.lightGrey 
+                : AppColors.textDark,
+            elevation: 0,
             actions: [
               IconButton(
                 icon: Icon(themeProvider.getThemeModeIcon()),
@@ -124,7 +133,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          body: Consumer<AuthProvider>(
+          body: SimpleBackground(
+            themeProvider: themeProvider,
+            child: Consumer<AuthProvider>(
             builder: (context, authProvider, child) {
               if (!authProvider.isAuthenticated || authProvider.user == null) {
                 return const Center(
@@ -476,6 +487,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               );
             },
+          ),
           ),
         );
       },
