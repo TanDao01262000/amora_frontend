@@ -491,6 +491,17 @@ class ApiService {
     return TimelineEntry.fromJson(data['data']);
   }
 
+  Future<TimelineEntry> updateTimelineEntry(String entryId, CreateTimelineRequest request) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/timeline/$entryId'),
+      headers: _getHeaders(),
+      body: json.encode(request.toJson()),
+    );
+
+    final data = _handleResponse(response);
+    return TimelineEntry.fromJson(data['data']);
+  }
+
   Future<void> deleteTimelineEntry(String entryId) async {
     final response = await http.delete(
       Uri.parse('$baseUrl/timeline/$entryId'),
@@ -498,6 +509,60 @@ class ApiService {
     );
 
     _handleResponse(response);
+  }
+
+  // Like/Unlike timeline entry
+  Future<TimelineEntry> likeTimelineEntry(String entryId) async {
+    print('🚀 API Call: POST $baseUrl/timeline/$entryId/like');
+    print('🔑 Using token: ${_token?.substring(0, 20)}...');
+    
+    final response = await http.post(
+      Uri.parse('$baseUrl/timeline/$entryId/like'),
+      headers: _getHeaders(),
+    );
+
+    final data = _handleResponse(response);
+    return TimelineEntry.fromJson(data['data']);
+  }
+
+  Future<TimelineEntry> unlikeTimelineEntry(String entryId) async {
+    print('🚀 API Call: DELETE $baseUrl/timeline/$entryId/like');
+    print('🔑 Using token: ${_token?.substring(0, 20)}...');
+    
+    final response = await http.delete(
+      Uri.parse('$baseUrl/timeline/$entryId/like'),
+      headers: _getHeaders(),
+    );
+
+    final data = _handleResponse(response);
+    return TimelineEntry.fromJson(data['data']);
+  }
+
+  // Love/Unlove timeline entry
+  Future<TimelineEntry> loveTimelineEntry(String entryId) async {
+    print('🚀 API Call: POST $baseUrl/timeline/$entryId/love');
+    print('🔑 Using token: ${_token?.substring(0, 20)}...');
+    
+    final response = await http.post(
+      Uri.parse('$baseUrl/timeline/$entryId/love'),
+      headers: _getHeaders(),
+    );
+
+    final data = _handleResponse(response);
+    return TimelineEntry.fromJson(data['data']);
+  }
+
+  Future<TimelineEntry> unloveTimelineEntry(String entryId) async {
+    print('🚀 API Call: DELETE $baseUrl/timeline/$entryId/love');
+    print('🔑 Using token: ${_token?.substring(0, 20)}...');
+    
+    final response = await http.delete(
+      Uri.parse('$baseUrl/timeline/$entryId/love'),
+      headers: _getHeaders(),
+    );
+
+    final data = _handleResponse(response);
+    return TimelineEntry.fromJson(data['data']);
   }
 
   // Calendar methods

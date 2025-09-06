@@ -13,6 +13,10 @@ TimelineEntry _$TimelineEntryFromJson(Map<String, dynamic> json) =>
       note: json['note'] as String,
       mediaUrl: json['media_url'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),
+      likes: (json['likes'] as num?)?.toInt(),
+      loves: (json['loves'] as num?)?.toInt(),
+      isLiked: json['is_liked'] as bool?,
+      isLoved: json['is_loved'] as bool?,
     );
 
 Map<String, dynamic> _$TimelineEntryToJson(TimelineEntry instance) =>
@@ -22,6 +26,10 @@ Map<String, dynamic> _$TimelineEntryToJson(TimelineEntry instance) =>
       'note': instance.note,
       'media_url': instance.mediaUrl,
       'created_at': instance.createdAt.toIso8601String(),
+      'likes': instance.likes,
+      'loves': instance.loves,
+      'is_liked': instance.isLiked,
+      'is_loved': instance.isLoved,
     };
 
 CreateTimelineRequest _$CreateTimelineRequestFromJson(

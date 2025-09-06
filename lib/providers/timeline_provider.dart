@@ -68,6 +68,30 @@ class TimelineProvider with ChangeNotifier {
     }
   }
 
+  // Update timeline entry
+  Future<bool> updateTimelineEntry(String entryId, String note, {String? mediaUrl}) async {
+    _setLoading(true);
+    _clearError();
+    
+    try {
+      final request = CreateTimelineRequest(note: note, mediaUrl: mediaUrl);
+      final updatedEntry = await _apiService.updateTimelineEntry(entryId, request);
+      
+      // Find and replace the entry in the list
+      final index = _timeline.indexWhere((entry) => entry.id == entryId);
+      if (index != -1) {
+        _timeline[index] = updatedEntry;
+        notifyListeners();
+      }
+      return true;
+    } catch (e) {
+      _setError('Failed to update timeline entry: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   // Delete timeline entry
   Future<bool> deleteTimelineEntry(String entryId) async {
     _setLoading(true);
@@ -104,6 +128,78 @@ class TimelineProvider with ChangeNotifier {
   // Get timeline entries with media
   List<TimelineEntry> getTimelineWithMedia() {
     return _timeline.where((entry) => entry.mediaUrl != null && entry.mediaUrl!.isNotEmpty).toList();
+  }
+
+  // Like timeline entry
+  Future<bool> likeTimelineEntry(String entryId) async {
+    try {
+      final updatedEntry = await _apiService.likeTimelineEntry(entryId);
+      
+      // Find and replace the entry in the list
+      final index = _timeline.indexWhere((entry) => entry.id == entryId);
+      if (index != -1) {
+        _timeline[index] = updatedEntry;
+        notifyListeners();
+      }
+      return true;
+    } catch (e) {
+      _setError('Failed to like timeline entry: $e');
+      return false;
+    }
+  }
+
+  // Unlike timeline entry
+  Future<bool> unlikeTimelineEntry(String entryId) async {
+    try {
+      final updatedEntry = await _apiService.unlikeTimelineEntry(entryId);
+      
+      // Find and replace the entry in the list
+      final index = _timeline.indexWhere((entry) => entry.id == entryId);
+      if (index != -1) {
+        _timeline[index] = updatedEntry;
+        notifyListeners();
+      }
+      return true;
+    } catch (e) {
+      _setError('Failed to unlike timeline entry: $e');
+      return false;
+    }
+  }
+
+  // Love timeline entry
+  Future<bool> loveTimelineEntry(String entryId) async {
+    try {
+      final updatedEntry = await _apiService.loveTimelineEntry(entryId);
+      
+      // Find and replace the entry in the list
+      final index = _timeline.indexWhere((entry) => entry.id == entryId);
+      if (index != -1) {
+        _timeline[index] = updatedEntry;
+        notifyListeners();
+      }
+      return true;
+    } catch (e) {
+      _setError('Failed to love timeline entry: $e');
+      return false;
+    }
+  }
+
+  // Unlove timeline entry
+  Future<bool> unloveTimelineEntry(String entryId) async {
+    try {
+      final updatedEntry = await _apiService.unloveTimelineEntry(entryId);
+      
+      // Find and replace the entry in the list
+      final index = _timeline.indexWhere((entry) => entry.id == entryId);
+      if (index != -1) {
+        _timeline[index] = updatedEntry;
+        notifyListeners();
+      }
+      return true;
+    } catch (e) {
+      _setError('Failed to unlove timeline entry: $e');
+      return false;
+    }
   }
 
   // Helper methods

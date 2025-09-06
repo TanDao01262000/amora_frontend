@@ -12,6 +12,12 @@ class TimelineEntry {
   final String? mediaUrl;
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
+  final int? likes;
+  final int? loves;
+  @JsonKey(name: 'is_liked')
+  final bool? isLiked;
+  @JsonKey(name: 'is_loved')
+  final bool? isLoved;
 
   TimelineEntry({
     required this.id,
@@ -19,6 +25,10 @@ class TimelineEntry {
     required this.note,
     this.mediaUrl,
     required this.createdAt,
+    this.likes,
+    this.loves,
+    this.isLiked,
+    this.isLoved,
   });
 
   factory TimelineEntry.fromJson(Map<String, dynamic> json) => _$TimelineEntryFromJson(json);
