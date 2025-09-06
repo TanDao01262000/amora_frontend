@@ -91,12 +91,6 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ],
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              // TODO: Implement quick action
-            },
-            child: const Icon(Icons.add),
-          ),
         );
       },
     );

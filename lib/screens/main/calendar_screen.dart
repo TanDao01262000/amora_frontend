@@ -6,7 +6,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../models/calendar.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/romantic_background.dart';
+import '../../widgets/simple_background.dart';
 
 class CalendarScreen extends StatefulWidget {
   final VoidCallback? onNavigateToProfile;
@@ -17,49 +17,15 @@ class CalendarScreen extends StatefulWidget {
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStateMixin {
+class _CalendarScreenState extends State<CalendarScreen> {
   DateTime _selectedDate = DateTime.now();
-  late AnimationController _heartAnimationController;
-  late Animation<double> _heartScaleAnimation;
-  late Animation<double> _heartOpacityAnimation;
-  bool _showHeartShadow = false;
-  Offset? _heartPosition;
 
   @override
   void initState() {
     super.initState();
-    
-    // Initialize heart animation controller
-    _heartAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-    
-    _heartScaleAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.2,
-    ).animate(CurvedAnimation(
-      parent: _heartAnimationController,
-      curve: Curves.elasticOut,
-    ));
-    
-    _heartOpacityAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.0,
-    ).animate(CurvedAnimation(
-      parent: _heartAnimationController,
-      curve: const Interval(0.6, 1.0, curve: Curves.easeOut),
-    ));
-    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadEventsIfPartnerExists();
     });
-  }
-
-  @override
-  void dispose() {
-    _heartAnimationController.dispose();
-    super.dispose();
   }
 
   void _loadEventsIfPartnerExists() {
@@ -73,60 +39,6 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
     }
   }
 
-  void _triggerHeartAnimation(Offset position) {
-    setState(() {
-      _heartPosition = position;
-      _showHeartShadow = true;
-    });
-    
-    _heartAnimationController.forward().then((_) {
-      setState(() {
-        _showHeartShadow = false;
-      });
-      _heartAnimationController.reset();
-    });
-  }
-
-  Widget _buildHeartShadow() {
-    if (!_showHeartShadow || _heartPosition == null) {
-      return const SizedBox.shrink();
-    }
-
-    return Positioned(
-      left: _heartPosition!.dx - 20,
-      top: _heartPosition!.dy - 20,
-      child: AnimatedBuilder(
-        animation: _heartAnimationController,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _heartScaleAnimation.value,
-            child: Opacity(
-              opacity: _heartOpacityAnimation.value,
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.pink.withOpacity(0.6),
-                      blurRadius: 20,
-                      spreadRadius: 5,
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.favorite,
-                  color: Colors.pink,
-                  size: 30,
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
 
   Future<void> _showCreateEventDialog() async {
     final nameController = TextEditingController();
@@ -277,7 +189,7 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                 : AppColors.textDark,
             elevation: 0,
           ),
-          body: RomanticBackground(
+          body: SimpleBackground(
             themeProvider: themeProvider,
             child: Consumer2<CalendarProvider, AuthProvider>(
               builder: (context, calendarProvider, authProvider, child) {
@@ -340,9 +252,6 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                                 _selectedDate = selectedDay;
                               });
                             },
-                            onDayTap: (position) {
-                              _triggerHeartAnimation(position);
-                            },
                             eventLoader: (day) {
                               return calendarProvider.getEventsForDate(day);
                             },
@@ -368,7 +277,6 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                               rightChevronIcon: const Icon(Icons.chevron_right, color: Colors.pink),
                             ),
                           ),
-                          _buildHeartShadow(),
                         ],
                       ),
                     ),
@@ -438,20 +346,6 @@ class _CalendarScreenState extends State<CalendarScreen> with TickerProviderStat
                 );
               },
             ),
-          ),
-          floatingActionButton: Consumer<AuthProvider>(
-            builder: (context, authProvider, child) {
-              // Only show FAB if user has a partner
-              if (authProvider.user?.partnerId == null) {
-                return const SizedBox.shrink();
-              }
-              
-              return FloatingActionButton(
-                onPressed: _showCreateEventDialog,
-                backgroundColor: Colors.pink,
-                child: const Icon(Icons.add, color: Colors.white),
-              );
-            },
           ),
         );
       },
@@ -550,7 +444,6 @@ class TableCalendar<T> extends StatefulWidget {
   final List<T> Function(DateTime) eventLoader;
   final CalendarStyle calendarStyle;
   final HeaderStyle headerStyle;
-  final void Function(Offset)? onDayTap;
 
   const TableCalendar({
     super.key,
@@ -562,7 +455,6 @@ class TableCalendar<T> extends StatefulWidget {
     required this.eventLoader,
     required this.calendarStyle,
     required this.headerStyle,
-    this.onDayTap,
   });
 
   @override
@@ -668,12 +560,6 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
           child: GestureDetector(
             onTap: () {
               widget.onDaySelected(date, date);
-              if (widget.onDayTap != null) {
-                // Get the global position of the tapped day
-                final RenderBox renderBox = context.findRenderObject() as RenderBox;
-                final position = renderBox.localToGlobal(Offset.zero);
-                widget.onDayTap!(position);
-              }
             },
             child: Container(
               height: 46,

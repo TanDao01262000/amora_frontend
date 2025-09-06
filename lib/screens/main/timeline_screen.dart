@@ -71,7 +71,10 @@ class _TimelineScreenState extends State<TimelineScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+            onPressed: () {
+              noteController.dispose();
+              Navigator.of(context).pop(false);
+            },
             child: const Text('Cancel'),
           ),
           ElevatedButton(
