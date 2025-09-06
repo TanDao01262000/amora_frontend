@@ -4,6 +4,8 @@ import '../../providers/auth_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../models/user.dart';
 import '../theme_settings_screen.dart';
+import '../../widgets/simple_background.dart';
+import '../../theme/app_theme.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -39,6 +41,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Profile'),
+            backgroundColor: themeProvider.isDarkMode 
+                ? AppColors.darkLavender 
+                : AppColors.lovePink,
+            foregroundColor: themeProvider.isDarkMode 
+                ? AppColors.lightGrey 
+                : AppColors.textDark,
+            elevation: 0,
             actions: [
               IconButton(
                 icon: Icon(themeProvider.getThemeModeIcon()),
@@ -46,7 +55,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ],
           ),
-          body: Consumer<AuthProvider>(
+          body: SimpleBackground(
+            themeProvider: themeProvider,
+            child: Consumer<AuthProvider>(
             builder: (context, authProvider, child) {
               if (authProvider.isLoading) {
                 return const Center(child: CircularProgressIndicator());
@@ -329,6 +340,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               );
             },
+          ),
           ),
         );
       },
