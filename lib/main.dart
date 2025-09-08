@@ -6,10 +6,12 @@ import 'providers/routine_provider.dart';
 import 'providers/timeline_provider.dart';
 import 'providers/calendar_provider.dart';
 import 'providers/theme_provider.dart';
+import 'providers/location_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/main/main_screen.dart';
 import 'screens/theme_demo_screen.dart';
 import 'screens/theme_settings_screen.dart';
+import 'screens/main/map_screen.dart';
 import 'screens/quick_theme_demo.dart';
 import 'theme/app_theme.dart';
 import 'widgets/simple_background.dart';
@@ -30,6 +32,7 @@ class AppForLoveApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RoutineProvider()),
         ChangeNotifierProvider(create: (_) => TimelineProvider()),
         ChangeNotifierProvider(create: (_) => CalendarProvider()),
+        ChangeNotifierProvider(create: (_) => LocationProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
@@ -43,6 +46,7 @@ class AppForLoveApp extends StatelessWidget {
               '/theme-demo': (context) => const ThemeDemoScreen(),
               '/quick-demo': (context) => const QuickThemeDemo(),
               '/theme-settings': (context) => const ThemeSettingsScreen(),
+              '/map': (context) => const MapScreen(),
             },
           );
         },

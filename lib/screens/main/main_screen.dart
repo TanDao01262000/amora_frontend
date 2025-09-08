@@ -7,6 +7,7 @@ import 'calendar_screen.dart';
 import 'profile_screen.dart';
 import '../../providers/theme_provider.dart';
 import '../../widgets/simple_background.dart';
+import 'map_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -59,6 +60,14 @@ class _MainScreenState extends State<MainScreen> {
           body: SimpleBackground(
             themeProvider: themeProvider,
             child: _getScreen(_currentIndex),
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const MapScreen()),
+              );
+            },
+            child: const Icon(Icons.map),
           ),
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
